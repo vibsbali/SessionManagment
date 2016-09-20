@@ -1,0 +1,34 @@
+﻿@model SessionManagement.Models.Client
+
+@{
+    ViewBag.Title = "SessionManagement";
+}
+
+<h2>SessionManagement</h2>
+
+<div>
+    <h4>Client</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Uac)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Uac)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TimeInitialised)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TimeInitialised)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
