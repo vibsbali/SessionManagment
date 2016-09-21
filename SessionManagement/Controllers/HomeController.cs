@@ -9,6 +9,8 @@ namespace SessionManagement.Controllers
 {
     public class HomeController : Controller
     {
+        public static HttpCookieCollection cookies = new HttpCookieCollection();
+
         public ActionResult Index()
         {
             return View();
@@ -31,6 +33,31 @@ namespace SessionManagement.Controllers
             }
 
             return View(currentClient);
+        }
+
+        public ActionResult CookieSessionManagement(string uac)
+        {
+            if (Request.Cookies[uac] == null)
+            {
+                Response.Cookies[uac].Value = uac;
+                Response.Cookies[uac].Expires = DateTime.Now.AddMinutes(20d);
+
+
+                HttpCookie aCookie = new HttpCookie("lastVisit");
+                aCookie.Value = DateTime.Now.ToString();
+                aCookie.Expires = DateTime.Now.AddMinutes(20d);
+                Response.Cookies.Add(aCookie);                
+            }
+            else
+            {
+                HttpCookie cookie = Request.Cookies[uac];
+                Response.Cookies[uac].Value = cookie.Value;
+                Response.Cookies[uac].Value = cookie.Expires.ToString();
+            }
+            var currentClient = Response.Cookies[uac].Value;
+            ViewBag.currentClient = currentClient;
+            ViewBag.CurrentClientSessionExpiry = Response.Cookies[uac].Expires;
+            return View();
         }
 
         public ActionResult About()
