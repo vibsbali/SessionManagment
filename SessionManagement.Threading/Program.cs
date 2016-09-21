@@ -9,8 +9,27 @@ namespace SessionManagement.Threading
 {
     class Program
     {
+        private static volatile bool cancel = false;
         static void Main(string[] args)
         {
+            /*
+                Coordinating Thread Shutdown
+            */
+            var coordinatedThread = new Thread(SayHelloInfinity);
+            coordinatedThread.Start();
+
+            Console.WriteLine("Press ENTER to cancel");
+            Console.ReadLine();
+            cancel = true;
+            //join is important to ensure we allow the thread to do what it is doing before returning
+            coordinatedThread.Join();
+            Console.WriteLine(coordinatedThread.IsAlive);
+            
+            //You will have to abort if you do not use Join otherwise we can start the thread again  
+            //coordinatedThread.Abort();
+
+            ThreadPool.QueueUserWorkItem(DisplayMessage, "This is from thread pool");
+
             Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} Main Called");
 
             var t = new Thread(SayHello);
@@ -20,14 +39,25 @@ namespace SessionManagement.Threading
 
             Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId} Main Ended");
 
+            //cancel = false;
 
             var t2 = new Thread(DisplayMessage);
             t2.Start("Say Hello");
 
+            Console.WriteLine(coordinatedThread.IsAlive);
 
             var messenger = new Messenger("Hello!!");
             var t3 = new Thread(messenger.SayHello);
             t3.Start();
+        }
+
+        private static void SayHelloInfinity()
+        {
+            while (!cancel)
+            {
+                Console.WriteLine("Hello");
+                Thread.Sleep(1000);
+            }
         }
 
         static void SayHello()
@@ -45,7 +75,7 @@ namespace SessionManagement.Threading
 
             if (msg != null)
             {
-                Console.WriteLine(msg);
+                Console.WriteLine(msg  + $" from {Thread.CurrentThread.ManagedThreadId}");
             }
         }
     }
